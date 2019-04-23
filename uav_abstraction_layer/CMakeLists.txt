@@ -19,11 +19,12 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   gazebo_msgs
   sensor_msgs
+  dji_sdk
   geodesy
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(DJIOSDK REQUIRED)
 
 # Check for mavros version for compatibility with older versions
 execute_process(COMMAND rosversion mavros
@@ -37,6 +38,9 @@ else()
   if ("${geographiclib_file}" STREQUAL "geographiclib_file-NOTFOUND")
     message(FATAL_ERROR "GeographicLib exception: File not readable /usr/share/GeographicLib/geoids/egm96-5.pgm \n Run install_geographiclib_dataset.sh script in order to install Geoid Model dataset! \n Or run: $ sudo geographiclib-get-geoids egm96-5")
   endif()
+endif()
+if ("${mavros_version}" VERSION_LESS "0.29.0")
+  add_definitions("-DMAVROS_VERSION_BELOW_0_29_0=\"${mavros_version}\"")
 endif()
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -130,7 +134,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES uav_abstraction_layer
-  CATKIN_DEPENDS message_runtime geometry_msgs mavros mavros_msgs roscpp std_msgs tf2_ros gazebo_msgs sensor_msgs geodesy
+  CATKIN_DEPENDS message_runtime geometry_msgs mavros mavros_msgs roscpp std_msgs tf2_ros gazebo_msgs sensor_msgs geodesy dji_sdk
 #  DEPENDS system_lib
 )
 
@@ -150,7 +154,7 @@ include_directories(
 #   src/${PROJECT_NAME}/uav_abstraction_layer.cpp
 # )
 add_library(${PROJECT_NAME}
-  src/backend.cpp src/backend_mavros.cpp src/backend_light.cpp src/ual.cpp
+  src/backend.cpp src/backend_mavros.cpp src/backend_light.cpp src/backend_dji.cpp src/ual.cpp 
 )
 
 ## Add cmake target dependencies of the library
@@ -183,10 +187,12 @@ add_dependencies(server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TA
 target_link_libraries(test_ual_interfaces
   ${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  ${DJIOSDK_LIBRARIES}
 )
 target_link_libraries(server
   ${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  ${DJIOSDK_LIBRARIES}
 )
 
 ###################
