@@ -44,6 +44,7 @@
 
 namespace grvc { namespace ual {
 
+
 class HistoryBuffer {  // TODO: template? utils?
 public:
     void set_size(size_t _size) {

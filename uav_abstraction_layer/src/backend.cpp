@@ -19,10 +19,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------------------------------------------------
 #include <uav_abstraction_layer/backend.h>
-#include <uav_abstraction_layer/backend_mavros.h>
-#include <uav_abstraction_layer/backend_light.h>
-#include <uav_abstraction_layer/backend_dummy.h>
-#include <uav_abstraction_layer/backend_dji.h>
+// #include <uav_abstraction_layer/backend_mavros.h>
+#include <uav_abstraction_layer/backend_mavros_fw.h>
+// #include <uav_abstraction_layer/backend_light.h>
+// #include <uav_abstraction_layer/backend_dummy.h>
+// #include <uav_abstraction_layer/backend_dji.h>
+
 
 namespace grvc { namespace ual {
 
@@ -40,18 +42,26 @@ Backend* Backend::createBackend() {
     ros::NodeHandle nh("~");
     std::string selected_backend;
     nh.param<std::string>("backend", selected_backend, "mavros");
-    if (selected_backend == "mavros") {
-        be = new BackendMavros();
+    // if (selected_backend == "mavros") {
+    //     be = new BackendMavros();
+    // }
+    // else if (selected_backend == "light") {
+    //     be = new BackendLight();
+    // }
+    // else if (selected_backend == "dummy") {
+    //     be = new BackendDummy();
+    // }
+    // else if (selected_backend == "dji") {
+    //     be = new BackendDji();
+    // }
+    // else if (selected_backend == "mavros_fw") {
+    //     be = new BackendMavrosFW();
+    // }
+
+    if (selected_backend == "mavros_fw") {
+        be = new BackendMavrosFW();
     }
-    else if (selected_backend == "light") {
-        be = new BackendLight();
-    }
-    else if (selected_backend == "dummy") {
-        be = new BackendDummy();
-    }
-    else if (selected_backend == "dji") {
-        be = new BackendDji();
-    }
+
     return be;
 }
 

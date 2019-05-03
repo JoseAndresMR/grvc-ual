@@ -29,6 +29,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <uav_abstraction_layer/WaypointSet.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <nav_msgs/Odometry.h>
 // #include <nav_msgs/Path.h>
@@ -101,6 +102,10 @@ public:
     /// Go to the specified waypoint in geographic coordinates, following a straight line
     /// \param _wp goal waypoint in geographic coordinates
     virtual void	goToWaypointGeo(const WaypointGeo& _wp) = 0;
+
+    /// Execute specified mission following provided waypoints
+    /// \param _waypoint_set_list is the list of groups of waypoints with same parameters
+    virtual void	setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list) = 0;
 
     /// Follow a list of waypoints, one after another
     // virtual void	trackPath(const Path& _path) = 0;

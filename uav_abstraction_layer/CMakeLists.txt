@@ -76,6 +76,8 @@ endif()
 add_message_files(
   FILES
   State.msg
+  Param_float.msg
+  WaypointSet.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -87,6 +89,7 @@ add_service_files(
   Land.srv
   SetVelocity.srv
   SetHome.srv
+  SetMission.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -154,7 +157,7 @@ include_directories(
 #   src/${PROJECT_NAME}/uav_abstraction_layer.cpp
 # )
 add_library(${PROJECT_NAME}
-  src/backend.cpp src/backend_mavros.cpp src/backend_light.cpp src/backend_dji.cpp src/ual.cpp 
+  src/backend.cpp src/backend_mavros_fw.cpp src/backend_mavros.cpp src/backend_light.cpp src/backend_dji.cpp src/ual.cpp  
 )
 
 ## Add cmake target dependencies of the library

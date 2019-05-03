@@ -94,6 +94,7 @@ void UAL::init() {
             std::string land_srv = ual_ns + "/land";
             std::string go_to_waypoint_srv = ual_ns + "/go_to_waypoint";
             std::string go_to_waypoint_geo_srv = ual_ns + "/go_to_waypoint_geo";
+            std::string set_mission_srv = ual_ns + "/set_mission";
             std::string set_pose_topic = ual_ns + "/set_pose";
             std::string set_velocity_topic = ual_ns + "/set_velocity";
             std::string recover_from_manual_srv = ual_ns + "/recover_from_manual";
@@ -121,6 +122,12 @@ void UAL::init() {
                 go_to_waypoint_srv,
                 [this](GoToWaypoint::Request &req, GoToWaypoint::Response &res) {
                 return this->goToWaypoint(req.waypoint, req.blocking);
+            });
+            ros::ServiceServer set_mission_service =
+                nh.advertiseService<SetMission::Request, SetMission::Response>(
+                set_mission_srv,
+                [this](SetMission::Request &req, SetMission::Response &res) {
+                return this->setMission(req.waypoint_set, req.blocking);
             });
             ros::ServiceServer go_to_waypoint_geo_service =
                 nh.advertiseService<GoToWaypointGeo::Request, GoToWaypointGeo::Response>(
@@ -343,6 +350,21 @@ bool UAL::recoverFromManual() {
     // Direct call! TODO: threadSafeCall?
     backend_->recoverFromManual();
 
+    return true;
+}
+
+bool UAL::setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list, bool blocking) {
+    std::cout<<"On UAL setMission"<<std::endl;
+    // // Check required state
+    // if (backend_->state() != Backend::State::FLYING_AUTO) {
+    //     ROS_ERROR("Unable to setVelocity: not FLYING_AUTO!");
+    //     return false;
+    // }
+    // Override any previous FLYING function
+    if (!backend_->isIdle()) { backend_->abort(); }
+
+    // Function is non-blocking in backend TODO: non-thread-safe-call?
+    backend_->threadSafeCall(&Backend::setMission, _waypoint_set_list);
     return true;
 }
 
