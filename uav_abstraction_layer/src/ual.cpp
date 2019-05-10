@@ -103,6 +103,7 @@ void UAL::init() {
             std::string velocity_topic = ual_ns + "/velocity";
             std::string odometry_topic = ual_ns + "/odom";
             std::string state_topic = ual_ns + "/state";
+            std::string mission_state_topic = ual_ns + "/mission_state";
 
             ros::NodeHandle nh;
             ros::ServiceServer take_off_service =
@@ -163,6 +164,7 @@ void UAL::init() {
             ros::Publisher velocity_pub = nh.advertise<geometry_msgs::TwistStamped>(velocity_topic, 10);
             ros::Publisher odometry_pub = nh.advertise<nav_msgs::Odometry>(odometry_topic, 10);
             ros::Publisher state_pub = nh.advertise<uav_abstraction_layer::State>(state_topic, 10);
+            ros::Publisher mission_state_pub = nh.advertise<int>(mission_state_topic, 10);
             static tf2_ros::TransformBroadcaster tf_pub;
 
             // Publish @ 30Hz default
@@ -174,6 +176,7 @@ void UAL::init() {
                 velocity_pub.publish(this->velocity());
                 odometry_pub.publish(this->odometry());
                 state_pub.publish(this->state());
+                mission_state_pub.publish(this->mission_state());
                 tf_pub.sendTransform(this->transform());
                 loop_rate.sleep();
             }

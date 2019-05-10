@@ -665,6 +665,12 @@ Odometry BackendMavrosFW::odometry() const {
     return odom;
 }
 
+int BackendMavrosFW::mission_state() const {
+
+    return mavros_cur_mission_.current_seq;
+
+}
+
 Transform BackendMavrosFW::transform() const {
     Transform out;
     out.header.stamp = ros::Time::now();

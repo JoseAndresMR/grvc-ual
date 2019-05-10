@@ -60,6 +60,9 @@ public:
     /// Current robot state
     uav_abstraction_layer::State state();
 
+    /// Current waypoint of the list that define de mission
+    int mission_state();
+
     /// Set pose
     /// \param _pose target pose
     bool    setPose(const geometry_msgs::PoseStamped& _pose);

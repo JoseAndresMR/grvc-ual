@@ -86,6 +86,8 @@ public:
     virtual Velocity velocity() const = 0;
     /// Latest odometry estimation of the robot
     virtual Odometry odometry() const = 0;
+    /// Current waypoint of the list that define de mission
+    virtual int mission_state() const = 0;
     /// Latest transform estimation of the robot
     virtual Transform transform() const = 0;
     /// Current robot state
