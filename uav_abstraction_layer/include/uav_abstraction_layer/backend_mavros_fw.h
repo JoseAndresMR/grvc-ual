@@ -39,7 +39,6 @@
 #include <mavros_msgs/WaypointList.h>
 #include <mavros_msgs/Waypoint.h>
 #include <uav_abstraction_layer/WaypointSet.h>
-#include <uav_abstraction_layer/Param_float.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -64,8 +63,6 @@ public:
     virtual Velocity velocity() const override;
     /// Latest odometry estimation of the robot
     virtual Odometry odometry() const override;
-    /// Current waypoint of the list that define de mission
-    virtual int mission_state() const override;
     /// Latest transform estimation of the robot
     virtual Transform transform() const override;
 
@@ -110,11 +107,12 @@ private:
     void setParam(const std::string& _param_id,const int& _param_value);
     void pushMission(const mavros_msgs::WaypointList& _wp_list);
     void clearMission();
-    void addTakeOffWp(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set);
-    void addPassWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set);
-    void addLoiterWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set);
-    void addLandWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set);
+    void addTakeOffWp(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addPassWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addLoiterWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addLandWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
     mavros_msgs::Waypoint poseStampedtoGlobalWaypoint(const geometry_msgs::PoseStamped& _actual_cartesian);
+    void checkParams(const std::map<std::string, float>& existing_params_map, const std::vector<std::string>& required_params, const int& wp_set_index);
     void trialMission();
     void initMission();
     State guessState();
@@ -134,7 +132,9 @@ private:
     int  mavros_reached_wp_;
     mavros_msgs::WaypointList  mavros_cur_mission_;
     geographic_msgs::GeoPoint origin_geo_;
-            /// Possible mission waypoint types
+    std::vector<int> takeoff_wps_on_mission_;
+    std::vector<int> land_wps_on_mission_;
+    /// Possible mission waypoint types
     enum WaypointSetType {
         TAKEOFF_POSE,
         TAKEOFF_AUX,

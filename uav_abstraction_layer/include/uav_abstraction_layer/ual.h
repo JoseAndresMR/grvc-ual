@@ -28,6 +28,7 @@
 #include <uav_abstraction_layer/SetMission.h>
 #include <uav_abstraction_layer/SetVelocity.h>
 #include <uav_abstraction_layer/State.h>
+#include <uav_abstraction_layer/MissionState.h>
 #include <thread>
 
 namespace grvc { namespace ual {
@@ -61,7 +62,7 @@ public:
     uav_abstraction_layer::State state();
 
     /// Current waypoint of the list that define de mission
-    int mission_state();
+    uav_abstraction_layer::MissionState mission_state();
 
     /// Set pose
     /// \param _pose target pose

@@ -164,7 +164,7 @@ void UAL::init() {
             ros::Publisher velocity_pub = nh.advertise<geometry_msgs::TwistStamped>(velocity_topic, 10);
             ros::Publisher odometry_pub = nh.advertise<nav_msgs::Odometry>(odometry_topic, 10);
             ros::Publisher state_pub = nh.advertise<uav_abstraction_layer::State>(state_topic, 10);
-            ros::Publisher mission_state_pub = nh.advertise<int>(mission_state_topic, 10);
+            ros::Publisher mission_state_pub = nh.advertise<uav_abstraction_layer::MissionState>(mission_state_topic, 10);
             static tf2_ros::TransformBroadcaster tf_pub;
 
             // Publish @ 30Hz default
@@ -358,11 +358,11 @@ bool UAL::recoverFromManual() {
 
 bool UAL::setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list, bool blocking) {
     std::cout<<"On UAL setMission"<<std::endl;
-    // // Check required state
-    // if (backend_->state() != Backend::State::FLYING_AUTO) {
-    //     ROS_ERROR("Unable to setVelocity: not FLYING_AUTO!");
-    //     return false;
-    // }
+    if ((backend_->state() != Backend::State::LANDED_ARMED) & (backend_->state() != Backend::State::FLYING_AUTO)) {
+        ROS_ERROR("Unable to goToWaypoint: not LANDED_ARMED or FLYING_AUTO!");
+        return false;
+    }
+
     // Override any previous FLYING function
     if (!backend_->isIdle()) { backend_->abort(); }
 
@@ -400,6 +400,15 @@ uav_abstraction_layer::State UAL::state() {
             ROS_ERROR("Unexpected Backend::State!");
     }
     return output;
+}
+
+uav_abstraction_layer::MissionState UAL::mission_state() {
+
+    uav_abstraction_layer::MissionState output;
+    output.current_wp = backend_->mission_state();
+
+    return output;
+
 }
 
 bool UAL::setHome(bool set_z) {

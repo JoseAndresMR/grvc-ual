@@ -86,12 +86,12 @@ public:
     virtual Velocity velocity() const = 0;
     /// Latest odometry estimation of the robot
     virtual Odometry odometry() const = 0;
-    /// Current waypoint of the list that define de mission
-    virtual int mission_state() const = 0;
     /// Latest transform estimation of the robot
     virtual Transform transform() const = 0;
     /// Current robot state
     inline State state() { return this->state_; }
+    /// Current waypoint of the list that define de mission
+    virtual int mission_state() { return this->mission_state_; }
 
     /// Set pose
     /// \param _pose target pose
@@ -157,6 +157,7 @@ protected:
     std::thread spin_thread_;
 
     std::atomic<State> state_ = {UNINITIALIZED};
+    int mission_state_ = 0;
 };
 
 }}	// namespace grvc::ual

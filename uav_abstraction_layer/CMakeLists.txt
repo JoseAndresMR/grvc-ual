@@ -78,6 +78,7 @@ add_message_files(
   State.msg
   Param_float.msg
   WaypointSet.msg
+  MissionState.msg
 )
 
 ## Generate services in the 'srv' folder
