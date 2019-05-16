@@ -39,6 +39,7 @@
 #include <mavros_msgs/WaypointList.h>
 #include <mavros_msgs/Waypoint.h>
 #include <uav_abstraction_layer/WaypointSet.h>
+#include <uav_abstraction_layer/Param_float.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/TransformStamped.h>

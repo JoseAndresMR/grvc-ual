@@ -21,6 +21,7 @@
 #include <uav_abstraction_layer/ual.h>
 #include <uav_abstraction_layer/GoToWaypointGeo.h>
 #include <uav_abstraction_layer/SetHome.h>
+#include <uav_abstraction_layer/MissionState.h>
 #include <ros/ros.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <std_srvs/Empty.h>

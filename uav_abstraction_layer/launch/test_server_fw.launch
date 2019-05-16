@@ -17,6 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <arg name="ual_server" default="on"/>
     <arg name="ual_pub_rate" default="30.0"/>
     <arg name="mavros_mission_rate" default="30.0"/>
+    <arg name="fcu_url" default="udp://:14550@localhost:14556"/>
 
     <group if="$(eval mode=='sitl')">
         <!-- Launch Gazebo simulation -->
@@ -43,6 +44,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <arg name="y" value="0"/>
         <arg name="z" value="0"/>
         <arg name="yaw" value="0"/>
+        <arg name="fcu_url" value="$(arg fcu_url)"/>
     </include>
 
     <group if="$(arg multi)">
