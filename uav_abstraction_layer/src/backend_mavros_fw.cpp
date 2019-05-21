@@ -115,7 +115,7 @@ BackendMavrosFW::BackendMavrosFW()
             if (!this->mavros_has_geo_pose_) {
                 if (_msg->position_covariance[0] < 1.2 && _msg->position_covariance[0] > 0 && _msg->header.seq > 100) {
                     this->mavros_has_geo_pose_ = true;
-                    // ROS_INFO("Has Geo Pose! %f",_msg->position_covariance[0]);
+                    ROS_INFO("Has Geo Pose! %f",_msg->position_covariance[0]);
                 }
             }
     });
@@ -597,6 +597,7 @@ void BackendMavrosFW::initHomeFrame() {
         ROS_WARN("Be careful, you should only use this mode with RTK GPS!");
         while (!this->mavros_has_geo_pose_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
         }
         std::vector<double> map_origin_geo(3, 0.0);
         ros::param::get("~map_origin_geo",map_origin_geo);

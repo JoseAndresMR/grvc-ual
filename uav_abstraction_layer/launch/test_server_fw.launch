@@ -95,7 +95,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <!-- Define home pose relative to global map frame -->
         <!-- <rosparam param="home_pose">[0, 0, 0]</rosparam>[x,y,z] -->
         <!-- Define the global map frame geo position and let the UAL estimate the relative home pose -->
-        <rosparam param="map_origin_geo">[37.558592, -5.931420, 7.89]</rosparam><!-- [lat,lon,alt] -->
+        <rosparam param="map_origin_geo">[37.4120687, -6.0021959, 71.5408066875]</rosparam><!-- [lat,lon,alt] -->
     </node>
 
     <group if="$(arg multi)">
