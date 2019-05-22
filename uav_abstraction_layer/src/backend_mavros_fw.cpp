@@ -220,11 +220,12 @@ Backend::State BackendMavrosFW::guessState() {
 
 void BackendMavrosFW::initMission() {
 
+    clearMission();
     setFlightMode("AUTO.LAND");
-    arm(false);
-    arm(true);
     setParam("NAV_DLL_ACT",0);
     setParam("MIS_DIST_WPS",900);
+    arm(false);
+    arm(true);
 }
 
 void BackendMavrosFW::setFlightMode(const std::string& _flight_mode) {
