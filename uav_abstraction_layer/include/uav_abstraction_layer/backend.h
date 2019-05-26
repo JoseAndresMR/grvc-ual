@@ -42,6 +42,8 @@ typedef sensor_msgs::NavSatFix          WaypointGeo;
 typedef geometry_msgs::TwistStamped     Velocity;
 typedef nav_msgs::Odometry              Odometry;
 typedef geometry_msgs::TransformStamped Transform;
+typedef uav_abstraction_layer::WaypointSet WaypointSet;
+
 
 /// Common interface for back-end implementations of ual
 class Backend {
@@ -107,7 +109,7 @@ public:
 
     /// Execute specified mission following provided waypoints
     /// \param _waypoint_set_list is the list of groups of waypoints with same parameters
-    virtual void	setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list) = 0;
+    virtual void	setMission(const std::vector<WaypointSet>& _waypoint_set_list) = 0;
 
     /// Follow a list of waypoints, one after another
     // virtual void	trackPath(const Path& _path) = 0;

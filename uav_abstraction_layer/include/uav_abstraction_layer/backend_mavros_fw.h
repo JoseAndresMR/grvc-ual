@@ -18,8 +18,8 @@
 // OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------------------------------------------------
-#ifndef UAV_ABSTRACTION_LAYER_BACKEND_MAVROS_H
-#define UAV_ABSTRACTION_LAYER_BACKEND_MAVROS_H
+#ifndef UAV_ABSTRACTION_LAYER_BACKEND_MAVROS_FW_H
+#define UAV_ABSTRACTION_LAYER_BACKEND_MAVROS_FW_H
 
 #include <thread>
 #include <vector>
@@ -38,14 +38,16 @@
 #include <mavros_msgs/GlobalPositionTarget.h>
 #include <mavros_msgs/WaypointList.h>
 #include <mavros_msgs/Waypoint.h>
-#include <uav_abstraction_layer/WaypointSet.h>
-#include <uav_abstraction_layer/Param_float.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <geographic_msgs/GeoPoint.h>
+
+//UAL messages
+#include <uav_abstraction_layer/WaypointSet.h>
+#include <uav_abstraction_layer/Param_float.h>
 
 namespace grvc { namespace ual {
 
@@ -114,7 +116,6 @@ private:
     void addLandWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
     mavros_msgs::Waypoint poseStampedtoGlobalWaypoint(const geometry_msgs::PoseStamped& _actual_cartesian);
     void checkParams(const std::map<std::string, float>& existing_params_map, const std::vector<std::string>& required_params, const int& wp_set_index);
-    void trialMission();
     void initMission();
     State guessState();
 
@@ -196,4 +197,4 @@ private:
 
 }}	// namespace grvc::ual
 
-#endif // UAV_ABSTRACTION_LAYER_BACKEND_MAVROS_H
+#endif // UAV_ABSTRACTION_LAYER_BACKEND_MAVROS_FW_H

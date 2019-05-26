@@ -36,11 +36,18 @@
 #include <mavros_msgs/State.h>
 #include <mavros_msgs/ExtendedState.h>
 #include <mavros_msgs/GlobalPositionTarget.h>
+#include <mavros_msgs/WaypointList.h>
+#include <mavros_msgs/Waypoint.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <geographic_msgs/GeoPoint.h>
+
+//UAL messages
+#include <uav_abstraction_layer/WaypointSet.h>
+#include <uav_abstraction_layer/Param_float.h>
 
 namespace grvc { namespace ual {
 
@@ -150,6 +157,8 @@ public:
     void    takeOff(double _height) override;
     /// Land on the current position.
     void	land() override;
+    /// Execute mission of a sequence of waypoints
+    void	setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list) override;
     /// Set velocities
     /// \param _vel target velocity in world coordinates
     void    setVelocity(const Velocity& _vel) override;
@@ -165,6 +174,15 @@ private:
     bool referencePoseReached();
     void setFlightMode(const std::string& _flight_mode);
     double updateParam(const std::string& _param_id);
+    void setParam(const std::string& _param_id,const int& _param_value);
+    void pushMission(const mavros_msgs::WaypointList& _wp_list);
+    void clearMission();
+    void addTakeOffWp(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addPassWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addLoiterWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addLandWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    mavros_msgs::Waypoint poseStampedtoGlobalWaypoint(const geometry_msgs::PoseStamped& _actual_cartesian);
+    void checkParams(const std::map<std::string, float>& existing_params_map, const std::vector<std::string>& required_params, const int& wp_set_index);
     State guessState();
 
     //WaypointList path_;
@@ -177,6 +195,25 @@ private:
     geometry_msgs::TwistStamped cur_vel_body_;
     mavros_msgs::State          mavros_state_;
     mavros_msgs::ExtendedState  mavros_extended_state_;
+
+    //Mission
+    int  mavros_reached_wp_;
+    mavros_msgs::WaypointList  mavros_cur_mission_;
+    geographic_msgs::GeoPoint origin_geo_;
+    std::vector<int> takeoff_wps_on_mission_;
+    std::vector<int> land_wps_on_mission_;
+    /// Possible mission waypoint types
+    enum WaypointSetType {
+        TAKEOFF_POSE,
+        TAKEOFF_AUX,
+        PASS,
+        LOITER_UNLIMITED,
+        LOITER_TURNS,
+        LOITER_TIME,
+        LOITER_HEIGHT,
+        LAND_POSE,
+        LAND_AUX,
+    };
 
     //Control
     enum class eControlMode {LOCAL_VEL, LOCAL_POSE, GLOBAL_POSE};
@@ -192,6 +229,9 @@ private:
     ros::ServiceClient flight_mode_client_;
     ros::ServiceClient arming_client_;
     ros::ServiceClient get_param_client_;
+    ros::ServiceClient set_param_client_;
+    ros::ServiceClient push_mission_client_;
+    ros::ServiceClient clear_mission_client_;
     ros::Publisher mavros_ref_pose_pub_;
     ros::Publisher mavros_ref_pose_global_pub_;
     ros::Publisher mavros_ref_vel_pub_;

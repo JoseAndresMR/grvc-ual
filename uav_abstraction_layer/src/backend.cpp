@@ -19,7 +19,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------------------------------------------------
 #include <uav_abstraction_layer/backend.h>
-// #include <uav_abstraction_layer/backend_mavros.h>
+#include <uav_abstraction_layer/backend_mavros.h>
 #include <uav_abstraction_layer/backend_mavros_fw.h>
 // #include <uav_abstraction_layer/backend_light.h>
 // #include <uav_abstraction_layer/backend_dummy.h>
@@ -42,9 +42,9 @@ Backend* Backend::createBackend() {
     ros::NodeHandle nh("~");
     std::string selected_backend;
     nh.param<std::string>("backend", selected_backend, "mavros");
-    // if (selected_backend == "mavros") {
-    //     be = new BackendMavros();
-    // }
+    if (selected_backend == "mavros") {
+        be = new BackendMavros();
+    }
     // else if (selected_backend == "light") {
     //     be = new BackendLight();
     // }
@@ -54,13 +54,13 @@ Backend* Backend::createBackend() {
     // else if (selected_backend == "dji") {
     //     be = new BackendDji();
     // }
-    // else if (selected_backend == "mavros_fw") {
-    //     be = new BackendMavrosFW();
-    // }
-
-    if (selected_backend == "mavros_fw") {
+    else if (selected_backend == "mavros_fw") {
         be = new BackendMavrosFW();
     }
+
+    // if (selected_backend == "mavros_fw") {
+    //     be = new BackendMavrosFW();
+    // }
 
     return be;
 }
