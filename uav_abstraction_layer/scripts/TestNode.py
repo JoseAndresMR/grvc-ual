@@ -82,7 +82,7 @@ class TestNode(object):
         params = [Param_float("minimum_pitch",0.0),Param_float("yaw_angle",0.0)]
         takeoff_set.params = params
         takeoff_pose = PoseStamped()
-        takeoff_pose.pose.position = Point(100.0,0.0,40.0)
+        takeoff_pose.pose.position = Point(0.0,0.0,40.0)
         takeoff_set.posestamped_list = [takeoff_pose]
 
         new_mission = [takeoff_set]
@@ -94,38 +94,38 @@ class TestNode(object):
         pass_pose = PoseStamped()
         pass_pose.pose.position = Point(200.0,100.0,70.0)
         pass_set.posestamped_list = [pass_pose]
-        # pass1_pose = PoseStamped()
-        # pass1_pose.pose.position = Point(200.0,-100.0,100.0)
-        # pass_set.posestamped_list.append(pass1_pose)
-        # pass2_pose = PoseStamped()
-        # pass2_pose.pose.position = Point(-200.0,100.0,100.0)
-        # pass_set.posestamped_list.append(pass2_pose)
-        # pass3_pose = PoseStamped()
-        # pass3_pose.pose.position = Point(-200.0,-100.0,100.0)
-        # pass_set.posestamped_list.append(pass3_pose)
+        pass1_pose = PoseStamped()
+        pass1_pose.pose.position = Point(200.0,-100.0,100.0)
+        pass_set.posestamped_list.append(pass1_pose)
+        pass2_pose = PoseStamped()
+        pass2_pose.pose.position = Point(-200.0,100.0,100.0)
+        pass_set.posestamped_list.append(pass2_pose)
+        pass3_pose = PoseStamped()
+        pass3_pose.pose.position = Point(-200.0,-100.0,100.0)
+        pass_set.posestamped_list.append(pass3_pose)
         new_mission.append(pass_set)
 
-        loiter_set = WaypointSet()
-        loiter_set.type = self.WaypointSetType["LOITER_TIME"]
-        params = [Param_float("time",90.0),Param_float("radius",60.0),Param_float("forward_moving",0.0)]
-        loiter_set.params = params
-        loiter_pose = PoseStamped()
-        loiter_pose.pose.position = Point(0.0,0.0,100.0)
-        loiter_set.posestamped_list = [loiter_pose]
-        new_mission.append(loiter_set)
+        # loiter_set = WaypointSet()
+        # loiter_set.type = self.WaypointSetType["LOITER_TIME"]
+        # params = [Param_float("time",90.0),Param_float("radius",60.0),Param_float("forward_moving",0.0)]
+        # loiter_set.params = params
+        # loiter_pose = PoseStamped()
+        # loiter_pose.pose.position = Point(0.0,0.0,100.0)
+        # loiter_set.posestamped_list = [loiter_pose]
+        # new_mission.append(loiter_set)
 
-        land_set = WaypointSet()
-        land_set.type = self.WaypointSetType["LAND_POSE"]
-        params = [Param_float("loit_heading",0.0),Param_float("loit_radius",40.0),Param_float("loit_forward_moving",0.0),
-                 Param_float("precision_mode",0.0),Param_float("abort_alt",0.0),Param_float("yaw_angle",0.0) ]
-        land_set.params = params
-        land_pose = PoseStamped()
-        land_pose.pose.position = Point(0.0,0.0,0.0)
-        land_set.posestamped_list = [land_pose]
-        land1_pose = PoseStamped()
-        land1_pose.pose.position = Point(25.0,-100.0,10.0)
-        land_set.posestamped_list.append(land1_pose)
-        new_mission.append(land_set)
+        # land_set = WaypointSet()
+        # land_set.type = self.WaypointSetType["LAND_POSE"]
+        # params = [Param_float("loit_heading",0.0),Param_float("loit_radius",40.0),Param_float("loit_forward_moving",0.0),
+        #          Param_float("precision_mode",0.0),Param_float("abort_alt",0.0),Param_float("yaw_angle",0.0) ]
+        # land_set.params = params
+        # land_pose = PoseStamped()
+        # land_pose.pose.position = Point(0.0,0.0,0.0)
+        # land_set.posestamped_list = [land_pose]
+        # land1_pose = PoseStamped()
+        # land1_pose.pose.position = Point(25.0,-100.0,10.0)
+        # land_set.posestamped_list.append(land1_pose)
+        # new_mission.append(land_set)
 
         print(new_mission)
 

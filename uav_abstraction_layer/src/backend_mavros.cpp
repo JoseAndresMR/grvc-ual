@@ -61,6 +61,8 @@ BackendMavros::BackendMavros()
     std::string set_mode_srv = mavros_ns + "/set_mode";
     std::string arming_srv = mavros_ns + "/cmd/arming";
     std::string get_param_srv = mavros_ns + "/param/get";
+    std::string push_mission_srv = mavros_ns + "/mission/push";
+    std::string clear_mission_srv = mavros_ns + "/mission/clear";
     std::string set_pose_topic = mavros_ns + "/setpoint_position/local";
     std::string set_pose_global_topic = mavros_ns + "/setpoint_raw/global";
     std::string set_vel_topic = mavros_ns + "/setpoint_velocity/cmd_vel";
@@ -130,6 +132,12 @@ BackendMavros::BackendMavros()
 
     // Thread publishing target pose at 10Hz for offboard mode
     offboard_thread_ = std::thread(&BackendMavros::offboardThreadLoop, this);
+
+    // Client to push missions to mavros
+    push_mission_client_ = nh.serviceClient<mavros_msgs::WaypointPush>(push_mission_srv.c_str());
+
+    //Client to clear the mission on mavros
+    clear_mission_client_ = nh.serviceClient<mavros_msgs::WaypointClear>(clear_mission_srv.c_str());
 
     // Client to get parameters from mavros and required default values
     get_param_client_ = nh.serviceClient<mavros_msgs::ParamGet>(get_param_srv.c_str());
@@ -638,7 +646,7 @@ void BackendMavros::setMission(const std::vector<uav_abstraction_layer::Waypoint
         else if (waypoint_set.type == WaypointSetType::LAND_POSE || waypoint_set.type == WaypointSetType::LAND_AUX) { addLandWpList(new_mission,waypoint_set,i); }
         else {ROS_ERROR("Error in [%d]-th waypoint set, field type is not correct!", static_cast<int>(i));}
     }
-
+    
     clearMission();
     pushMission(new_mission);
 
@@ -783,6 +791,16 @@ void BackendMavros::initHomeFrame() {
     }
     else {
         ROS_WARN("No home pose or map origin was defined. Home frame will be equal to map.");
+    }
+
+    if (ros::param::has("~map_origin_geo")) {
+
+        std::vector<double> map_origin_geo(3, 0.0);
+        ros::param::get("~map_origin_geo",map_origin_geo);
+        origin_geo_.latitude = map_origin_geo[0];
+        origin_geo_.longitude = map_origin_geo[1];
+        origin_geo_.altitude = 0; //map_origin_geo[2];
+        
     }
 
     geometry_msgs::TransformStamped static_transformStamped;

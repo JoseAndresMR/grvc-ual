@@ -602,17 +602,17 @@ void BackendMavrosFW::initHomeFrame() {
         }
         std::vector<double> map_origin_geo(3, 0.0);
         ros::param::get("~map_origin_geo",map_origin_geo);
-        geographic_msgs::GeoPoint actual_coordinate_geo;       // origin_geo_ defined on .h
-        origin_geo_.latitude = map_origin_geo[0];
-        origin_geo_.longitude = map_origin_geo[1];
-        origin_geo_.altitude = 0; //map_origin_geo[2];
+        geographic_msgs::GeoPoint origin_geo, actual_coordinate_geo;       // origin_geo_ defined on .h
+        origin_geo.latitude = map_origin_geo[0];
+        origin_geo.longitude = map_origin_geo[1];
+        origin_geo.altitude = 0; //map_origin_geo[2];
         actual_coordinate_geo.latitude = cur_geo_pose_.latitude;
         actual_coordinate_geo.longitude = cur_geo_pose_.longitude;
         actual_coordinate_geo.altitude = 0; //cur_geo_pose_.altitude;
         if(map_origin_geo[0]==0 && map_origin_geo[1]==0) {
             ROS_WARN("Map origin is set to 0. Define map_origin_geo param by a vector in format [lat,lon,alt].");
         }
-        geometry_msgs::Point32 map_origin_cartesian = geographic_to_cartesian (actual_coordinate_geo, origin_geo_);
+        geometry_msgs::Point32 map_origin_cartesian = geographic_to_cartesian (actual_coordinate_geo, origin_geo);
 
         home_pose[0] = map_origin_cartesian.x;
         home_pose[1] = map_origin_cartesian.y;
@@ -620,6 +620,16 @@ void BackendMavrosFW::initHomeFrame() {
     }
     else {
         ROS_WARN("No home pose or map origin was defined. Home frame will be equal to map.");
+    }
+
+    if (ros::param::has("~map_origin_geo")) {
+
+        std::vector<double> map_origin_geo(3, 0.0);
+        ros::param::get("~map_origin_geo",map_origin_geo);
+        origin_geo_.latitude = map_origin_geo[0];
+        origin_geo_.longitude = map_origin_geo[1];
+        origin_geo_.altitude = 0; //map_origin_geo[2];
+        
     }
 
     geometry_msgs::TransformStamped static_transformStamped;
