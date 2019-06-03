@@ -647,7 +647,6 @@ void BackendMavros::setMission(const std::vector<uav_abstraction_layer::Waypoint
         else {ROS_ERROR("Error in [%d]-th waypoint set, field type is not correct!", static_cast<int>(i));}
     }
     
-    clearMission();
     pushMission(new_mission);
 
 }

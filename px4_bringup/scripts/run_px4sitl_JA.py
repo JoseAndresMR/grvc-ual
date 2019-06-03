@@ -32,7 +32,7 @@ def main():
     subprocess.call("mkdir -p " + temp_dir, shell=True)
 
     # Get udp configuration, depending on id
-    udp_config = utils.udp_config(args.id)
+    udp_config = utils.udp_config_JA(args.id)
 
     # Modify commands file to fit robot ports
     commands_file = rospack.get_path(args.description_package) + "/models/" + args.model + "/px4cmd"

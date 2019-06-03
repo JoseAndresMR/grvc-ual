@@ -50,7 +50,7 @@ def main():
     subprocess.call("mkdir -p " + temp_dir, shell=True)
 
     # Get udp configuration, depending on id
-    udp_config = utils.udp_config(args.id)
+    udp_config = utils.udp_config_JA(args.id)
 
     # Check file type (xacro or sdf)
     model_file_type = ""
