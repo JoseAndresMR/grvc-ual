@@ -146,7 +146,6 @@ BackendMavrosFW::BackendMavrosFW()
 
     // TODO: Check this and solve frames issue
     initHomeFrame();
-
     // Thread publishing target pose at 10Hz for mission mode
     mission_thread_ = std::thread(&BackendMavrosFW::missionThreadLoop, this);
 
@@ -220,12 +219,18 @@ Backend::State BackendMavrosFW::guessState() {
 
 void BackendMavrosFW::initMission() {
 
-    clearMission();
+    ROS_INFO("Flag0");
+    // clearMission();
     setFlightMode("AUTO.LAND");
-    setParam("NAV_DLL_ACT",0);
-    setParam("MIS_DIST_WPS",900);
+    ROS_INFO("Flag1");
     arm(false);
+    ROS_INFO("Flag2");
     arm(true);
+    ROS_INFO("Flag3");
+    setParam("NAV_DLL_ACT",0);
+    ROS_INFO("Flag4");
+    setParam("MIS_DIST_WPS",900);
+    ROS_INFO("Flag5");
 }
 
 void BackendMavrosFW::setFlightMode(const std::string& _flight_mode) {
@@ -598,7 +603,6 @@ void BackendMavrosFW::initHomeFrame() {
         ROS_WARN("Be careful, you should only use this mode with RTK GPS!");
         while (!this->mavros_has_geo_pose_) {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
         }
         std::vector<double> map_origin_geo(3, 0.0);
         ros::param::get("~map_origin_geo",map_origin_geo);
