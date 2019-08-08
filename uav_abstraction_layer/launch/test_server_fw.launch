@@ -40,7 +40,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <arg name="id" value="1"/>
         <arg name="material" value="Orange"/>
         <arg name="mode" value="$(arg mode)"/>
-        <arg name="x" value="0"/>
+        <arg name="x" value="200"/>
         <arg name="y" value="0"/>
         <arg name="z" value="0"/>
         <arg name="yaw" value="0"/>
@@ -93,9 +93,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <param name="mavros_mission_rate" value="$(arg mavros_mission_rate)"/>
         <param name="home_pose_parent_frame" value="map"/><!-- default= map -->
         <!-- Define home pose relative to global map frame -->
-        <!-- <rosparam param="home_pose">[0, 0, 0]</rosparam>[x,y,z] -->
+        <rosparam param="home_pose">[200, 0, 0]</rosparam><!--[x,y,z] -->
         <!-- Define the global map frame geo position and let the UAL estimate the relative home pose -->
-        <rosparam param="map_origin_geo">[37.412072, -6.002594, 7.89]</rosparam><!-- [lat,lon,alt] -->
+        <!-- <rosparam param="map_origin_geo">37.412072, -6.002594, 7.89]</rosparam>[lat,lon,alt] -->
     </node>
 
     <group if="$(arg multi)">

@@ -144,6 +144,8 @@ BackendMavrosFW::BackendMavrosFW()
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
+    // setParam("MIS_DIST_WPS",1200);
+    
     // TODO: Check this and solve frames issue
     initHomeFrame();
     // Thread publishing target pose at 10Hz for mission mode
@@ -166,6 +168,7 @@ BackendMavrosFW::BackendMavrosFW()
     // mavros_params_["MC_YAWRATE_MAX"]   = 200.0;  // [deg/s] Default value
     // mavros_params_["MPC_TKO_SPEED"]    =   1.5;  // [m/s]   Default value
     mavros_params_["NAV_DLL_ACT"]   =   1;  // [?]   Default value
+    mavros_params_["MIS_DIST_1PS"]   =   900;  // [m]   Default value
     mavros_params_["MIS_DIST_WPS"]   =   900;  // [m]   Default value
     // Updating here is non-sense as service seems to be slow in waking up
 
@@ -219,18 +222,14 @@ Backend::State BackendMavrosFW::guessState() {
 
 void BackendMavrosFW::initMission() {
 
-    ROS_INFO("Flag0");
+    // ROS_INFO("Flag0");
     // clearMission();
     setFlightMode("AUTO.LAND");
-    ROS_INFO("Flag1");
     arm(false);
-    ROS_INFO("Flag2");
     arm(true);
-    ROS_INFO("Flag3");
     setParam("NAV_DLL_ACT",0);
-    ROS_INFO("Flag4");
-    setParam("MIS_DIST_WPS",900);
-    ROS_INFO("Flag5");
+    setParam("MIS_DIST_1WP",0);
+    setParam("MIS_DIST_WPS",0);
 }
 
 void BackendMavrosFW::setFlightMode(const std::string& _flight_mode) {
@@ -332,8 +331,8 @@ void BackendMavrosFW::takeOff(double _height) {
     uav_abstraction_layer::WaypointSet loiter_waypoint_set;
     loiter_waypoint_set.type = WaypointSetType::LOITER_UNLIMITED;
     geometry_msgs::PoseStamped loiter_posestamped;
-    loiter_posestamped.pose.position.x = cur_pose_.pose.position.x;
-    loiter_posestamped.pose.position.y = cur_pose_.pose.position.y;
+    loiter_posestamped.pose.position.x = pose().pose.position.x;
+    loiter_posestamped.pose.position.y = pose().pose.position.y;
     loiter_posestamped.pose.position.z = _height;
     loiter_waypoint_set.posestamped_list.push_back(loiter_posestamped);
     param.name = "radius"; param.value = 20;
@@ -343,6 +342,12 @@ void BackendMavrosFW::takeOff(double _height) {
     new_mission.push_back(loiter_waypoint_set);
 
     setMission(new_mission);
+
+    ROS_INFO("Flying!");
+    calling_takeoff = false;
+
+    // Update state right now!
+    this->state_ = guessState();
 
 }
 
@@ -422,7 +427,21 @@ void BackendMavrosFW::goToWaypoint(const Waypoint& _world) {
 
     std::vector<uav_abstraction_layer::WaypointSet> new_mission;
 
-    uav_abstraction_layer::WaypointSet takeoff_waypoint_set;
+    uav_abstraction_layer::WaypointSet pass_waypoint_set;
+    pass_waypoint_set.type = WaypointSetType::PASS;
+    geometry_msgs::PoseStamped pass_posestamped;
+    pass_posestamped.pose.position.x = _world.pose.position.x;
+    pass_posestamped.pose.position.y = _world.pose.position.y;
+    pass_posestamped.pose.position.z = _world.pose.position.z;
+    pass_waypoint_set.posestamped_list.push_back(pass_posestamped);
+    uav_abstraction_layer::Param_float param;
+    param.name = "acceptance_radius"; param.value = 1.0;
+    pass_waypoint_set.params.push_back( param );
+    param.name = "orbit_distance"; param.value = 50.0;
+    pass_waypoint_set.params.push_back( param );
+    param.name = "yaw_angle"; param.value = std::nan("1.0");
+    pass_waypoint_set.params.push_back( param );
+    new_mission.push_back(pass_waypoint_set);
 
     uav_abstraction_layer::WaypointSet loiter_waypoint_set;
     loiter_waypoint_set.type = WaypointSetType::LOITER_UNLIMITED;
@@ -431,10 +450,10 @@ void BackendMavrosFW::goToWaypoint(const Waypoint& _world) {
     loiter_posestamped.pose.position.y = _world.pose.position.y;
     loiter_posestamped.pose.position.z = _world.pose.position.z;
     loiter_waypoint_set.posestamped_list.push_back(loiter_posestamped);
-    uav_abstraction_layer::Param_float param;
-    param.name = "radius"; param.value = 20;
+    // uav_abstraction_layer::Param_float param;
+    param.name = "radius"; param.value = 40.0;
     loiter_waypoint_set.params.push_back( param );
-    param.name = "yaw_angle"; param.value = 0;
+    param.name = "yaw_angle"; param.value = std::nan("1.0");
     loiter_waypoint_set.params.push_back( param );
     new_mission.push_back(loiter_waypoint_set);
 
@@ -599,6 +618,7 @@ void BackendMavrosFW::initHomeFrame() {
     if (ros::param::has("~home_pose")) {
         ros::param::get("~home_pose",home_pose);
     }
+    
     else if (ros::param::has("~map_origin_geo")) {
         ROS_WARN("Be careful, you should only use this mode with RTK GPS!");
         while (!this->mavros_has_geo_pose_) {
@@ -661,6 +681,7 @@ void BackendMavrosFW::initHomeFrame() {
 
     static_tf_broadcaster_ = new tf2_ros::StaticTransformBroadcaster();
     static_tf_broadcaster_->sendTransform(static_transformStamped);
+
 }
 
 double BackendMavrosFW::updateParam(const std::string& _param_id) {
@@ -685,7 +706,7 @@ void BackendMavrosFW::setParam(const std::string& _param_id, const int& _param_v
     mavros_msgs::ParamSet set_param_service;
     set_param_service.request.param_id = _param_id;
     set_param_service.request.value.integer = _param_value;     // FIX FOR FLOAT
-    set_param_service.request.value.real = 0;
+    set_param_service.request.value.real = 0.0;
 
     while (updateParam(_param_id) != _param_value && ros::ok()) {
         if (!set_param_client_.call(set_param_service)) {
@@ -759,7 +780,7 @@ void BackendMavrosFW::addTakeOffWp(mavros_msgs::WaypointList& _wp_list, const ua
         std::vector<std::string> required_aux_params { "aux_distance","aux_angle","aux_height" };
         checkParams(params_map, required_aux_params, wp_set_index);
 
-        geometry_msgs::PoseStamped aux_pose;
+        geometry_msgs::PoseStamped aux_pose = pose();
         aux_pose.pose.position.x += params_map["aux_distance"] * cos(params_map["aux_angle"]);
         aux_pose.pose.position.y += params_map["aux_distance"] * sin(params_map["aux_angle"]);
         aux_pose.pose.position.z += params_map["aux_height"];
@@ -917,8 +938,8 @@ void BackendMavrosFW::addLandWpList(mavros_msgs::WaypointList& _wp_list, const u
         checkParams(params_map, required_aux_params, wp_set_index);
 
         geometry_msgs::PoseStamped aux_pose = _waypoint_set.posestamped_list[0];
-        aux_pose.pose.position.x += params_map["aux_distance"] * cos(params_map["aux_angle"]);
-        aux_pose.pose.position.y += params_map["aux_distance"] * sin(params_map["aux_angle"]);
+        aux_pose.pose.position.x += params_map["aux_distance"] * cos(params_map["aux_angle"]) + local_start_pos_[0];
+        aux_pose.pose.position.y += params_map["aux_distance"] * sin(params_map["aux_angle"]) + local_start_pos_[1];
         aux_pose.pose.position.z += params_map["aux_height"];
         std::cout<<"PoseStamped:: x: "<<aux_pose.pose.position.x<<" y: "<<aux_pose.pose.position.y<<" z: "<<aux_pose.pose.position.z<<std::endl;
 
