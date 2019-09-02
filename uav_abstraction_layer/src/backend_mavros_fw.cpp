@@ -706,7 +706,7 @@ void BackendMavrosFW::setParam(const std::string& _param_id, const int& _param_v
     mavros_msgs::ParamSet set_param_service;
     set_param_service.request.param_id = _param_id;
     set_param_service.request.value.integer = _param_value;     // FIX FOR FLOAT
-    set_param_service.request.value.real = 0.0;
+    set_param_service.request.value.real = 0;
 
     while (updateParam(_param_id) != _param_value && ros::ok()) {
         if (!set_param_client_.call(set_param_service)) {
