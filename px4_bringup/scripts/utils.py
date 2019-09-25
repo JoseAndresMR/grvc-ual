@@ -10,7 +10,7 @@ def temp_dir(id):
 def udp_config(id):
     init_port = 14550 + 10*(id-1)
     config = {}
-    config["gcs_url"] = "udp://:" + str(init_port+1) + "@127.0.0.1:" + str(init_port) #@127.0.0.1, 10.201.0.101
+    config["gcs_url"] = "udp://:" + str(init_port+1) + "@127.0.0.1:" + str(init_port) #@127.0.0.1, 10.201.0.101, 192.168.100.102
     config["sim_port"] = init_port+2
     config["u_port"] = [init_port+3, init_port+4]
     config["o_port"] = [init_port+6, init_port+7]
@@ -19,10 +19,11 @@ def udp_config(id):
 def udp_config_JA(id):
     init_port = 14550 + 10*(id-1)
     config = {}
-    config["gcs_url"] = "udp://:" + str(init_port+1) + "@10.201.0.101:" + str(init_port)
+    config["gcs_url"] = "udp://:" + str(init_port+1) + "@192.168.100.3:" + str(init_port)
     config["sim_port"] = init_port+2
     config["u_port"] = [init_port+3, init_port+4]
     config["o_port"] = [init_port+6, init_port+7]
+    print("FLAAAAAAAAAAAAAAAAAAAAAAAG", config["gcs_url"])
     return config
 
 def check_unknown_args(unknown):
