@@ -23,7 +23,6 @@ def udp_config_JA(id):
     config["sim_port"] = init_port+2
     config["u_port"] = [init_port+3, init_port+4]
     config["o_port"] = [init_port+6, init_port+7]
-    print("FLAAAAAAAAAAAAAAAAAAAAAAAG", config["gcs_url"])
     return config
 
 def check_unknown_args(unknown):

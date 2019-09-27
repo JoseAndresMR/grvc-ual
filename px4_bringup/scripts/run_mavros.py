@@ -54,7 +54,6 @@ def main():
         udp_config["gcs_url"], shell=True)#"udp://:14440@192.168.1.128:14441"
     elif args.mode == "serial":
         # fcu_url = "serial:///dev/ttyACM0:57600"
-        fcu_url = "serial:///dev/ttyUSB0:57600"
         subprocess.call("rosparam set " + node_name + "/fcu_url " + fcu_url, shell=True)
     elif args.mode == "udp":
         # TODO: get ports from args?
