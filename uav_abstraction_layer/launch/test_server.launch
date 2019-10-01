@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <arg name="mavros_offboard_rate" default="30.0"/>
     <arg name="fcu_url" default="udp://:14550@localhost:14556"/>
     <arg name="gcs_url" default="udp://@localhost"/>
+    <arg name="robot_model" default="mbzirc"/>
 
     <group if="$(eval mode=='sitl')">
         <!-- Launch Gazebo simulation -->
@@ -46,6 +47,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <arg name="yaw" value="0"/>
         <arg name="fcu_url" value="$(arg fcu_url)"/>
         <arg name="gcs_url" value="$(arg fcu_url)"/>
+        <arg name="robot_model" value="$(arg robot_model)"/>
     </include>
 
     <group if="$(arg multi)">
@@ -58,6 +60,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             <arg name="y" value="0"/>
             <arg name="z" value="0"/>
             <arg name="yaw" value="0"/>
+            <arg name="robot_model" value="$(arg robot_model)"/>
         </include>
         <!-- Launch robot id=2 -->
         <include file="$(find px4_bringup)/launch/spawn_robot.launch" ns="$(arg ns_prefix)2">
@@ -68,6 +71,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             <arg name="y" value="10"/>
             <arg name="z" value="0"/>
             <arg name="yaw" value="0"/>
+            <arg name="robot_model" value="$(arg robot_model)"/>
         </include>
         <!-- Launch robot id=3 -->
         <include file="$(find px4_bringup)/launch/spawn_robot.launch" ns="$(arg ns_prefix)3">
@@ -78,6 +82,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             <arg name="y" value="10"/>
             <arg name="z" value="0"/>
             <arg name="yaw" value="0"/>
+            <arg name="robot_model" value="$(arg robot_model)"/>
         </include>
     </group>
 

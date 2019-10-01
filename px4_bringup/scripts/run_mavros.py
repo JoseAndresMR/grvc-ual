@@ -51,7 +51,9 @@ def main():
         "@127.0.0.1:" + str(udp_config["u_port"][1])
         subprocess.call("rosparam set " + node_name + "/fcu_url " + fcu_url, shell=True)
         subprocess.call("rosparam set " + node_name + "/gcs_url " + \
-        udp_config["gcs_url"], shell=True)#"udp://:14440@192.168.1.128:14441"
+        udp_config["gcs_url"], shell=True)
+        # Set target MAV_SYSTEM_ID, only on sitl. Consider extension to other modes.
+        subprocess.call("rosparam set " + node_name + "/target_system_id " + str(args.id), shell=True)
     elif args.mode == "serial":
         # fcu_url = "serial:///dev/ttyACM0:57600"
         subprocess.call("rosparam set " + node_name + "/fcu_url " + fcu_url, shell=True)
