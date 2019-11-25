@@ -55,6 +55,9 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   State.msg
+  MissionState.msg
+  Param_float.msg
+  WaypointSet.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -65,6 +68,7 @@ add_service_files(
   TakeOff.srv
   Land.srv
   SetHome.srv
+  SetMission.srv
 )
 
 ## Generate actions in the 'action' folder

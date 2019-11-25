@@ -24,6 +24,10 @@
 #include <Eigen/Eigen>
 #include <ros/ros.h>
 
+// #include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+// #include <tf2/LinearMath/Quaternion.h>
+
 
 geometry_msgs::Pose::_orientation_type q;
 // geometry_msgs::QuaternionStamped current_attitude;
@@ -690,37 +694,37 @@ void BackendDjiRos::goToWaypoint(const Waypoint& _world) {
     // No transform is needed
     homogen_world_pos = _world;
 
-    // tf2_ros::Buffer tfBuffer;
-    // tf2_ros::TransformListener tfListener(tfBuffer);
-    // std::string waypoint_frame_id = tf2::getFrameId(_world);
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    std::string waypoint_frame_id = tf2::getFrameId(_world);
 
-    // if ( waypoint_frame_id == "" || waypoint_frame_id == uav_home_frame_id_ ) {
-    //     // No transform is needed
-    //     homogen_world_pos = _world;
-    // }
-    // else {
-    //     // We need to transform
-    //     geometry_msgs::TransformStamped transformToHomeFrame;
+    if ( waypoint_frame_id == "" || waypoint_frame_id == uav_home_frame_id_ ) {
+        // No transform is needed
+        homogen_world_pos = _world;
+    }
+    else {
+        // We need to transform
+        geometry_msgs::TransformStamped transformToHomeFrame;
 
-    //     if ( cached_transforms_.find(waypoint_frame_id) == cached_transforms_.end() ) {
-    //         // waypoint_frame_id not found in cached_transforms_
-    //         transformToHomeFrame = tfBuffer.lookupTransform(uav_home_frame_id_, waypoint_frame_id, ros::Time(0), ros::Duration(1.0));
-    //         cached_transforms_[waypoint_frame_id] = transformToHomeFrame; // Save transform in cache
-    //     } else {
-    //         // found in cache
-    //         transformToHomeFrame = cached_transforms_[waypoint_frame_id];
-    //     }
+        if ( cached_transforms_.find(waypoint_frame_id) == cached_transforms_.end() ) {
+            // waypoint_frame_id not found in cached_transforms_
+            transformToHomeFrame = tfBuffer.lookupTransform(uav_home_frame_id_, waypoint_frame_id, ros::Time(0), ros::Duration(1.0));
+            cached_transforms_[waypoint_frame_id] = transformToHomeFrame; // Save transform in cache
+        } else {
+            // found in cache
+            transformToHomeFrame = cached_transforms_[waypoint_frame_id];
+        }
         
-    //     tf2::doTransform(_world, homogen_world_pos, transformToHomeFrame);
+        tf2::doTransform(_world, homogen_world_pos, transformToHomeFrame);
         
-    // }
+    }
 
-//    std::cout << "Going to waypoint: " << homogen_world_pos.pose.position << std::endl;
+   std::cout << "Going to waypoint: " << homogen_world_pos.pose.position << std::endl;
 
-    // // Do we still need local_start_pos_?
-    // homogen_world_pos.pose.position.x -= local_start_pos_[0];
-    // homogen_world_pos.pose.position.y -= local_start_pos_[1];
-    // homogen_world_pos.pose.position.z -= local_start_pos_[2];
+    // Do we still need local_start_pos_?
+    homogen_world_pos.pose.position.x -= local_start_pos_[0];
+    homogen_world_pos.pose.position.y -= local_start_pos_[1];
+    homogen_world_pos.pose.position.z -= local_start_pos_[2];
 
     // Smooth pose reference passing!
     geometry_msgs::Point final_position = homogen_world_pos.pose.position;
@@ -898,6 +902,10 @@ void	BackendDjiRos::goToWaypointGeo(const WaypointGeo& _wp){
     // TODO: basic imlementation, ideally different from a stack of gotos
 }*/
 
+void BackendDjiRos::setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list) {
+
+}
+
 Pose BackendDjiRos::pose() {
         Pose out;
 
@@ -913,30 +921,30 @@ Pose BackendDjiRos::pose() {
         out.pose.orientation.z = current_attitude_.quaternion.z;
         out.pose.orientation.w = current_attitude_.quaternion.w;
 
-        // if (pose_frame_id_ == "") {
-        //     // Default: local pose
-        //     out.header.frame_id = uav_home_frame_id_;
-        // }
-        // else {
-        //     // Publish pose in different frame
-        //     Pose aux = out;
-        //     geometry_msgs::TransformStamped transformToPoseFrame;
-        //     std::string pose_frame_id_map = "inv_" + pose_frame_id_;
+        if (pose_frame_id_ == "") {
+            // Default: local pose
+            out.header.frame_id = uav_home_frame_id_;
+        }
+        else {
+            // Publish pose in different frame
+            Pose aux = out;
+            geometry_msgs::TransformStamped transformToPoseFrame;
+            std::string pose_frame_id_map = "inv_" + pose_frame_id_;
 
-        //     if ( cached_transforms_.find(pose_frame_id_map) == cached_transforms_.end() ) {
-        //         // inv_pose_frame_id_ not found in cached_transforms_
-        //         tf2_ros::Buffer tfBuffer;
-        //         tf2_ros::TransformListener tfListener(tfBuffer);
-        //         transformToPoseFrame = tfBuffer.lookupTransform(pose_frame_id_,uav_home_frame_id_, ros::Time(0), ros::Duration(1.0));
-        //         cached_transforms_[pose_frame_id_map] = transformToPoseFrame; // Save transform in cache
-        //     } else {
-        //         // found in cache
-        //         transformToPoseFrame = cached_transforms_[pose_frame_id_map];
-        //     }
+            if ( cached_transforms_.find(pose_frame_id_map) == cached_transforms_.end() ) {
+                // inv_pose_frame_id_ not found in cached_transforms_
+                tf2_ros::Buffer tfBuffer;
+                tf2_ros::TransformListener tfListener(tfBuffer);
+                transformToPoseFrame = tfBuffer.lookupTransform(pose_frame_id_,uav_home_frame_id_, ros::Time(0), ros::Duration(1.0));
+                cached_transforms_[pose_frame_id_map] = transformToPoseFrame; // Save transform in cache
+            } else {
+                // found in cache
+                transformToPoseFrame = cached_transforms_[pose_frame_id_map];
+            }
 
-        //     tf2::doTransform(aux, out, transformToPoseFrame);
-        //     out.header.frame_id = pose_frame_id_;
-        // }
+            tf2::doTransform(aux, out, transformToPoseFrame);
+            out.header.frame_id = pose_frame_id_;
+        }
 
         return out;
 }
@@ -987,43 +995,43 @@ bool BackendDjiRos::referencePoseReached() {
     return position_holds && orientation_holds;
 }
 
-// void BackendDjiRos::initHomeFrame() {
+void BackendDjiRos::initHomeFrame() {
 
-//     uav_home_frame_id_ = "uav_" + std::to_string(robot_id_) + "_home";
-//     local_start_pos_ << 0.0, 0.0, 0.0;
+    uav_home_frame_id_ = "uav_" + std::to_string(robot_id_) + "_home";
+    local_start_pos_ << 0.0, 0.0, 0.0;
 
-//     // Get frame from rosparam
-//     std::string parent_frame;
-//     std::vector<double> home_pose(3, 0.0);
+    // Get frame from rosparam
+    std::string parent_frame;
+    std::vector<double> home_pose(3, 0.0);
 
-//     ros::param::get("~home_pose",home_pose);
-//     ros::param::param<std::string>("~home_pose_parent_frame", parent_frame, "map");
+    ros::param::get("~home_pose",home_pose);
+    ros::param::param<std::string>("~home_pose_parent_frame", parent_frame, "map");
 
-//     geometry_msgs::TransformStamped static_transformStamped;
+    geometry_msgs::TransformStamped static_transformStamped;
 
-//     static_transformStamped.header.stamp = ros::Time::now();
-//     static_transformStamped.header.frame_id = parent_frame;
-//     static_transformStamped.child_frame_id = uav_home_frame_id_;
-//     static_transformStamped.transform.translation.x = home_pose[0];
-//     static_transformStamped.transform.translation.y = home_pose[1];
-//     static_transformStamped.transform.translation.z = home_pose[2];
+    static_transformStamped.header.stamp = ros::Time::now();
+    static_transformStamped.header.frame_id = parent_frame;
+    static_transformStamped.child_frame_id = uav_home_frame_id_;
+    static_transformStamped.transform.translation.x = home_pose[0];
+    static_transformStamped.transform.translation.y = home_pose[1];
+    static_transformStamped.transform.translation.z = home_pose[2];
 
-//     if(parent_frame == "map" || parent_frame == "") {
-//         static_transformStamped.transform.rotation.x = 0;
-//         static_transformStamped.transform.rotation.y = 0;
-//         static_transformStamped.transform.rotation.z = 0;
-//         static_transformStamped.transform.rotation.w = 1;
-//     }
-//     else {
-//         tf2_ros::Buffer tfBuffer;
-//         tf2_ros::TransformListener tfListener(tfBuffer);
-//         geometry_msgs::TransformStamped transform_to_map;
-//         transform_to_map = tfBuffer.lookupTransform(parent_frame, "map", ros::Time(0), ros::Duration(2.0));
-//         static_transformStamped.transform.rotation = transform_to_map.transform.rotation;
-//     }
+    if(parent_frame == "map" || parent_frame == "") {
+        static_transformStamped.transform.rotation.x = 0;
+        static_transformStamped.transform.rotation.y = 0;
+        static_transformStamped.transform.rotation.z = 0;
+        static_transformStamped.transform.rotation.w = 1;
+    }
+    else {
+        tf2_ros::Buffer tfBuffer;
+        tf2_ros::TransformListener tfListener(tfBuffer);
+        geometry_msgs::TransformStamped transform_to_map;
+        transform_to_map = tfBuffer.lookupTransform(parent_frame, "map", ros::Time(0), ros::Duration(2.0));
+        static_transformStamped.transform.rotation = transform_to_map.transform.rotation;
+    }
 
-//     static_tf_broadcaster_ = new tf2_ros::StaticTransformBroadcaster();
-//     static_tf_broadcaster_->sendTransform(static_transformStamped);
-// }
+    static_tf_broadcaster_ = new tf2_ros::StaticTransformBroadcaster();
+    static_tf_broadcaster_->sendTransform(static_transformStamped);
+}
 
 }}	// namespace grvc::ual

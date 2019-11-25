@@ -41,6 +41,14 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <mavros_msgs/WaypointList.h>
+#include <mavros_msgs/Waypoint.h>
+
+#include <geographic_msgs/GeoPoint.h>
+
+//Own messages
+#include <uav_abstraction_layer/WaypointSet.h>
+#include <uav_abstraction_layer/Param_float.h>
 
 namespace grvc { namespace ual {
 
@@ -157,6 +165,8 @@ public:
     void    recoverFromManual() override;
     /// Set home position
     void    setHome(bool set_z) override;
+    /// Execute mission of a sequence of waypoints
+    void	setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list) override;
 
 private:
     void offboardThreadLoop();
@@ -168,6 +178,18 @@ private:
     bool takeOffPX4(double _height);
     bool takeOffAPM(double _height);
 
+    //Mission
+    void setParam(const std::string& _param_id,const int& _param_value);
+    void pushMission(const mavros_msgs::WaypointList& _wp_list);
+    void clearMission();
+    void addTakeOffWp(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addPassWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addLoiterWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    void addLandWpList(mavros_msgs::WaypointList& _wp_list, const uav_abstraction_layer::WaypointSet& _waypoint_set, const int& wp_set_index);
+    mavros_msgs::Waypoint poseStampedtoGlobalWaypoint(const geometry_msgs::PoseStamped& _actual_cartesian);
+    void checkParams(const std::map<std::string, float>& existing_params_map, const std::vector<std::string>& required_params, const int& wp_set_index);
+
+
     //WaypointList path_;
     geometry_msgs::PoseStamped  ref_pose_;
     sensor_msgs::NavSatFix      ref_pose_global_;
@@ -178,6 +200,26 @@ private:
     geometry_msgs::TwistStamped cur_vel_body_;
     mavros_msgs::State          mavros_state_;
     mavros_msgs::ExtendedState  mavros_extended_state_;
+
+
+    //Mission
+    int  mavros_reached_wp_;
+    mavros_msgs::WaypointList  mavros_cur_mission_;
+    geographic_msgs::GeoPoint origin_geo_;
+    std::vector<int> takeoff_wps_on_mission_;
+    std::vector<int> land_wps_on_mission_;
+    /// Possible mission waypoint types
+    enum WaypointSetType {
+        TAKEOFF_POSE,
+        TAKEOFF_AUX,
+        PASS,
+        LOITER_UNLIMITED,
+        LOITER_TURNS,
+        LOITER_TIME,
+        LOITER_HEIGHT,
+        LAND_POSE,
+        LAND_AUX,
+    };
 
     //Control
     enum class eControlMode {LOCAL_VEL, LOCAL_POSE, GLOBAL_POSE, NONE};
@@ -203,6 +245,10 @@ private:
     ros::Subscriber mavros_cur_vel_body_sub_;
     ros::Subscriber mavros_cur_state_sub_;
     ros::Subscriber mavros_cur_extended_state_sub_;
+
+    ros::ServiceClient set_param_client_;
+    ros::ServiceClient push_mission_client_;
+    ros::ServiceClient clear_mission_client_;
 
     int robot_id_;
     enum struct AutopilotType {PX4, APM, UNKNOWN};

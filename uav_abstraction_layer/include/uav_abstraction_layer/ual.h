@@ -25,7 +25,9 @@
 #include <uav_abstraction_layer/GoToWaypoint.h>
 #include <uav_abstraction_layer/TakeOff.h>
 #include <uav_abstraction_layer/Land.h>
+#include <uav_abstraction_layer/SetMission.h>
 #include <uav_abstraction_layer/State.h>
+#include <uav_abstraction_layer/MissionState.h>
 #include <thread>
 
 namespace grvc { namespace ual {
@@ -62,6 +64,13 @@ public:
         return output;
     }
 
+    /// Current waypoint of the list that define de mission
+    uav_abstraction_layer::MissionState mission_state() {
+        uav_abstraction_layer::MissionState output;
+        output.current_wp = backend_->mission_state();
+        return output;
+    };
+
     /// Set pose
     /// \param _pose target pose
     bool    setPose(const geometry_msgs::PoseStamped& _pose);
@@ -84,6 +93,11 @@ public:
     /// Land on the current position
     /// \param _blocking indicates if function call is blocking (default = true)
     bool	land(bool _blocking = true);
+
+    /// Execute specified mission
+    /// \param waypoint set indicates the waypoint groups with its parameters
+    /// \param _blocking indicates if function call is blocking (default = true)
+    bool	setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list, bool _blocking = true);
 
     /// Set velocities
     /// \param _vel target velocity in world coordinates

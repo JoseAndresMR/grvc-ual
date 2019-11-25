@@ -23,14 +23,15 @@
 
 #include <thread>
 // #include <deque>
+#include <Eigen/Core>
 
 #include <uav_abstraction_layer/backend.h>
 #include <ros/ros.h>
 // #include <ros/package.h>
-// #include <tf2_ros/transform_listener.h>
+#include <tf2_ros/transform_listener.h>
 // #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 // #include <tf2/LinearMath/Quaternion.h>
-// #include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2_ros/static_transform_broadcaster.h>
 
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
@@ -172,10 +173,14 @@ public:
     void    recoverFromManual() override;
     /// Set home position
     void    setHome(bool set_z) override;
+    /// Execute mission of a sequence of waypoints
+    void	setMission(const std::vector<uav_abstraction_layer::WaypointSet>& _waypoint_set_list) override;
+
+
 private:
     void controlThread();
     void setArmed(bool _value);
-    // void initHomeFrame();
+    void initHomeFrame();
     bool referencePoseReached();
     // void setFlightMode(const std::string& _flight_mode);
     State guessState();
@@ -259,10 +264,10 @@ private:
 
     int robot_id_;
     std::string pose_frame_id_;
-    // std::string uav_home_frame_id_;
-    // tf2_ros::StaticTransformBroadcaster * static_tf_broadcaster_;
-    // std::map <std::string, geometry_msgs::TransformStamped> cached_transforms_;
-    // Eigen::Vector3d local_start_pos_;
+    std::string uav_home_frame_id_;
+    tf2_ros::StaticTransformBroadcaster * static_tf_broadcaster_;
+    std::map <std::string, geometry_msgs::TransformStamped> cached_transforms_;
+    Eigen::Vector3d local_start_pos_;
     
     ros::Time last_command_time_;
 

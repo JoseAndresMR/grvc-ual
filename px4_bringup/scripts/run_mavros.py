@@ -22,7 +22,7 @@ def main():
                         help='set topic for gps rtk corrections')
     args, unknown = parser.parse_known_args()
     utils.check_unknown_args(unknown)
-
+    print(args)
     # Get an instance of RosPack with the default search paths
     rospack = rospkg.RosPack()
 

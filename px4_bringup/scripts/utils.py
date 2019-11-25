@@ -16,6 +16,15 @@ def udp_config(id):
     config["o_port"] = [init_port+6, init_port+7]
     return config
 
+def udp_config_JA(id):
+    init_port = 14550 + 10*(id-1)
+    config = {}
+    config["gcs_url"] = "udp://:" + str(init_port+1) + "@127.0.0.1:" + str(init_port) #192.168.1.106
+    config["sim_port"] = init_port+2
+    config["u_port"] = [init_port+3, init_port+4]
+    config["o_port"] = [init_port+6, init_port+7]
+    return config
+
 def check_unknown_args(unknown):
     for arg in unknown:
         if arg[0] == '-':

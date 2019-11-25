@@ -126,6 +126,21 @@ inline geometry_msgs::Point32 geographic_to_cartesian (const geographic_msgs::Ge
 }   // end geographic_to_cartesian
 
 
+// inline geographic_msgs::GeoPoint cartesian_to_geographic (geometry_msgs::Point32 actual_coordinate_cartesian, geographic_msgs::GeoPoint origin_geo)
+// {
+//     geodesy::UTMPoint origin_UTM(origin_geo);
+//     geodesy::UTMPoint actual_UTM(origin_geo);
+
+//     actual_UTM.easting += actual_coordinate_cartesian.x;
+//     actual_UTM.northing += actual_coordinate_cartesian.y;
+//     actual_UTM.altitude += actual_coordinate_cartesian.z;
+
+//     geographic_msgs::GeoPoint actual_coordinate_geo;
+//     actual_coordinate_geo = geodesy::toMsg(actual_UTM);
+
+//     return actual_coordinate_geo;
+
+// }
 
 inline geographic_msgs::GeoPoint cartesian_to_geographic (const geometry_msgs::Point32& _actual_coordinate_cartesian, const geographic_msgs::GeoPoint& _origin_geo) {
     geodesy::UTMPoint actual_coordinate_aux(_origin_geo);                                               // Conversion from geographic coordinates to UTM.
