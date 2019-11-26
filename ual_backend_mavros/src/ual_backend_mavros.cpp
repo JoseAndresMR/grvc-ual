@@ -368,8 +368,8 @@ void BackendMavros::takeOff(double _height) {
 bool BackendMavros::takeOffPX4(double _height) {
     control_mode_ = eControlMode::LOCAL_POSE;  // Take off control is performed in position (not velocity)
     float acc_max = 1.0;  // TODO: From param?
-    float vel_max = updateParam("MPC_TKO_SPEED");
-
+    // float vel_max = updateParam("MPC_TKO_SPEED");
+    float vel_max = 1.5;
     float a = sqrt(_height * acc_max);
     if (a < vel_max) {
         vel_max = a;
@@ -671,10 +671,14 @@ void BackendMavros::goToWaypoint(const Waypoint& _world) {
     float linear_distance  = sqrt(ab_x*ab_x + ab_y*ab_y + ab_z*ab_z);
     float linear_threshold = sqrt(position_th_);
     if (linear_distance > linear_threshold) {
-        float mpc_xy_vel_max   = updateParam("MPC_XY_VEL_MAX");
-        float mpc_z_vel_max_up = updateParam("MPC_Z_VEL_MAX_UP");
-        float mpc_z_vel_max_dn = updateParam("MPC_Z_VEL_MAX_DN");
-        float mc_yawrate_max   = updateParam("MC_YAWRATE_MAX");
+        // float mpc_xy_vel_max   = updateParam("MPC_XY_VEL_MAX");
+        // float mpc_z_vel_max_up = updateParam("MPC_Z_VEL_MAX_UP");
+        // float mpc_z_vel_max_dn = updateParam("MPC_Z_VEL_MAX_DN");
+        // float mc_yawrate_max   = updateParam("MC_YAWRATE_MAX");
+        float mpc_xy_vel_max   = 1.0;
+        float mpc_z_vel_max_up = 1.0;
+        float mpc_z_vel_max_dn = 1.0;
+        float mc_yawrate_max   = 30.0;
 
         float mpc_z_vel_max = (ab_z > 0)? mpc_z_vel_max_up : mpc_z_vel_max_dn;
         float xy_distance = sqrt(ab_x*ab_x + ab_y*ab_y);
