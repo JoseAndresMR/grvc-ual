@@ -14,10 +14,10 @@ def main():
                         help='robot id, used to compute udp ports')
     parser.add_argument('-mode', type=str, default="sitl",
                         help='robot mode, used to set proper fcu_url')
-    parser.add_argument('-target_ip', type=str, default="localhost",
-                        help='IP address of the device running px4, used to set proper fcu_url')
-    parser.add_argument('-own_ip', type=str, default="localhost",
-                        help='IP address of this device, used to set proper fcu_url')
+    # parser.add_argument('-target_ip', type=str, default="localhost",
+    #                     help='IP address of the device running px4, used to set proper fcu_url')
+    # parser.add_argument('-own_ip', type=str, default="localhost",
+    #                     help='IP address of this device, used to set proper fcu_url')
     parser.add_argument('-fcu_url', type=str, default="udp://:14550@localhost:14556",
                         help='set fcu_url manually in custom mode')
     parser.add_argument('-gcs_url', type=str, default="",
